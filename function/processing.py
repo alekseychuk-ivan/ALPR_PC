@@ -7,6 +7,9 @@ plate = 1
 truck = 2
 
 
+def sortBy(inputStr):
+    return inputStr[0][0]
+
 def read_pate(img):
     kernel = np.ones((3, 3))
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
