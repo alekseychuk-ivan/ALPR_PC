@@ -8,7 +8,7 @@ truck = 2
 
 
 def sortBy(inputStr):
-    return inputStr[0][0]
+    return inputStr[0][0][1], inputStr[0][0][0]
 
 def read_pate(img):
     kernel = np.ones((3, 3))
