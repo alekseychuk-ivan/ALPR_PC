@@ -1,20 +1,9 @@
 import time
-from ultralytics import YOLO
-from pathlib import Path
-from paddleocr import PaddleOCR
-import os
 from function.processing import *
 
 
-weight = Path('detect/model.pt')
-fullpath = os.getcwd()
-yolo = YOLO(model=os.path.join(fullpath, weight))
-ocr = PaddleOCR(use_angle_cls=True, lang='en', det_model_dir=os.path.join(fullpath, Path('detect/det_dir')),
-                rec_model_dir=os.path.join(fullpath, Path('detect/rec_dir')),
-                cls_model_dir=os.path.join(fullpath, Path('detect/cls_dir')))
-
-
 def main(filespath: str) -> None:
+    yolo, ocr = loadnets()
     now = time.time()
     with open(f"{os.path.join(filespath, 'work')}.txt", "a") as my_file:
         my_file.write('')
