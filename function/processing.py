@@ -1,14 +1,15 @@
 import re
 import cv2
 import numpy as np
+import os
+from ultralytics import YOLO
+from pathlib import Path
+from paddleocr import PaddleOCR
 
 car = 0
 plate = 1
 truck = 2
 
-
-def sortBy(inputStr):
-    return inputStr[0][0]
 
 def read_pate(img):
     kernel = np.ones((3, 3))
@@ -54,3 +55,14 @@ def order_points(pts):
     # Step #4: Return vertices ordered by theta
     ind = np.argsort(theta, axis=0)
     return pts[ind]
+
+
+def loadnets():
+    """Load  weights for yolo and paddleocr"""
+    weight = Path('detect/model.pt')
+    fullpath = os.getcwd()
+    yolo = YOLO(model=os.path.join(fullpath, weight))
+    ocr = PaddleOCR(use_angle_cls=True, lang='en', det_model_dir=os.path.join(fullpath, Path('detect/det_dir')),
+                    rec_model_dir=os.path.join(fullpath, Path('detect/rec_dir')),
+                    cls_model_dir=os.path.join(fullpath, Path('detect/cls_dir')))
+    return yolo, ocr
