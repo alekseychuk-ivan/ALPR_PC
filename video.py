@@ -1,4 +1,6 @@
 from function.processing import *
+import torch
+import paddle
 
 
 def main(filespath: str) -> None:
@@ -26,21 +28,23 @@ def main(filespath: str) -> None:
                             # im = cv2.resize(im, (94, 24), interpolation=cv2.INTER_CUBIC)
                             numplate = ocr.ocr(carplate, det=True, cls=False)
                             numplate = numplate[0]
-                            if (w - x) / (h - y) > 2:
-                                numplate.sort(key=lambda coord: (coord[0][0][0], coord[0][0][1]))
-                            else:
-                                numplate.sort(key=lambda coord: (coord[0][0][1], coord[0][0][0]))
-                            numplate_conf, numplate_data = [], []
-                            for i in range(min(2, len(numplate))):
-                                numplate_conf.append(numplate[i][1][1])
-                                numplate_data.append(numplate[i][1][0])
-                            if len(numplate_data):
-                                numplate = datafilter(''.join(numplate_data))
-                                frame = cv2.rectangle(img=frame, pt1=(x, y), pt2=(w, h), color=(255, 0, 255),
-                                                   thickness=3)
-                                frame = cv2.putText(frame, numplate, org=(x, y), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                                 fontScale=0.8, color=(0, 255, 255), thickness=2, )
-
+                            if numplate:
+                                if (w - x) / (h - y) > 2:
+                                    numplate.sort(key=lambda coord: (coord[0][0][0], coord[0][0][1]))
+                                else:
+                                    numplate.sort(key=lambda coord: (coord[0][0][1], coord[0][0][0]))
+                                numplate_conf, numplate_data = [], []
+                                for i in range(min(2, len(numplate))):
+                                    numplate_conf.append(numplate[i][1][1])
+                                    numplate_data.append(numplate[i][1][0])
+                                if len(numplate_data):
+                                    numplate = datafilter(''.join(numplate_data))
+                                    frame = cv2.rectangle(img=frame, pt1=(x, y), pt2=(w, h), color=(255, 0, 255),
+                                                          thickness=3)
+                                    frame = cv2.putText(frame, numplate, org=(x, y), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                                                        fontScale=0.8, color=(0, 255, 255), thickness=2, )
+                            torch.cuda.empty_cache()
+                            paddle.device.cuda.empty_cache()
                 cv2.imshow('video', frame)
                 if cv2.waitKey(30) == 27:
                     break
